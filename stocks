@@ -1,0 +1,103 @@
+Sub stocks_1()
+
+
+Dim ticker(5000) As String
+Dim open_price(5000) As Double
+Dim close_price(5000) As Double
+
+
+Dim i As Long
+Dim j As Long
+Dim total_v(5000) As Double
+
+'Dim open_jan As Double
+'Dim end_dec As Double
+'Dim number_ticker
+'Dim number_stock As Integer
+
+
+
+i = 2
+j = 0
+Do While (Cells(i, 1).Value <> "")
+
+    If Cells(i, 1).Value <> Cells(i - 1, 1).Value Then
+        ticker(j) = Cells(i, 1).Value
+        open_price(j) = Cells(i, 3).Value
+        j = j + 1
+    End If
+    close_price(j - 1) = Cells(i, 6).Value
+    total_v(j - 1) = total_v(j - 1) + Cells(i, 7).Value
+i = i + 1
+Loop
+
+
+Cells(1, 8).Value = "Ticker"
+Cells(1, 9).Value = "Yearly Change"
+Cells(1, 10).Value = "Percentage Change"
+Cells(1, 11).Value = "Total Stock Volume"
+
+
+For p = 0 To j - 1
+Cells(p + 2, 8).Value = ticker(p)
+Cells(p + 2, 9).Value = close_price(p) - open_price(p)
+If Cells(p + 2, 9) <= 0 Then
+Cells(p + 2, 9).Interior.ColorIndex = 3
+Else
+Cells(p + 2, 9).Interior.ColorIndex = 4
+End If
+If open_price(p) <> 0 Then
+Cells(p + 2, 10).Value = Cells(p + 2, 9).Value / open_price(p)
+Else
+Cells(p + 2, 10).Value = 0
+End If
+Cells(p + 2, 10) = Format(Cells(p + 2, 10).Value, "percent")
+Cells(p + 2, 11).Value = total_v(p)
+
+Next p
+
+max_increase = Cells(2, 10).Value
+max_decrease = Cells(2, 10).Value
+max_volume = Cells(2, 11).Value
+max_increase_count = 0
+max_decrease_count = 0
+max_volume_count = 0
+
+For p = 0 To j - 1
+
+If Cells(p + 2, 10).Value > max_increase Then
+
+max_increase = Cells(p + 2, 10)
+max_increase_count = p
+End If
+
+If Cells(p + 2, 10).Value < max_decrease Then
+
+max_decrease = Cells(p + 2, 10)
+max_decrease_count = p
+End If
+
+If Cells(p + 2, 11).Value > max_volume Then
+max_volume = Cells(p + 2, 11).Value
+max_volume_count = p
+End If
+
+Next p
+
+Cells(6, 14).Value = "Ticker"
+Cells(6, 15).Value = "Value"
+Cells(7, 13).Value = "Greatest % Increase"
+Cells(7, 15).Value = max_increase
+Cells(7, 15) = Format(Cells(7, 15).Value, "percent")
+Cells(7, 14).Value = ticker(max_increase_count)
+
+Cells(8, 13).Value = "Greatest % Decrease"
+Cells(8, 15).Value = max_decrease
+Cells(8, 15) = Format(Cells(8, 15).Value, "percent")
+Cells(8, 14).Value = ticker(max_decrease_count)
+
+Cells(9, 13).Value = "Greatest Total Volume"
+Cells(9, 14).Value = ticker(max_volume_count)
+Cells(9, 15).Value = max_volume
+
+End Sub
